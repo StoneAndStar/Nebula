@@ -34,11 +34,11 @@
 			appearance_descriptors[descriptor.name] = descriptor.randomize_value()
 
 	backpack = GET_DECL(pick(subtypesof(/decl/backpack_outfit)))
-	b_type = RANDOM_BLOOD_TYPE
+	b_type = pickweight(current_species.blood_types)
 	if(H)
 		copy_to(H)
 
-/datum/preferences/proc/dress_preview_mob(var/mob/living/carbon/human/mannequin)
+/datum/preferences/proc/dress_preview_mob(var/mob/living/carbon/human/dummy/mannequin)
 
 	if(!mannequin)
 		return

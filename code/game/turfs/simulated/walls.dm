@@ -131,15 +131,14 @@ var/global/list/wall_fullblend_objects = list(
 	var/damage = min(proj_damage, 100)
 
 	take_damage(damage)
-	return
 
 /turf/simulated/wall/hitby(AM, var/datum/thrownthing/TT)
 	..()
-	if(!ismob(AM))
+	if(density && !ismob(AM))
 		var/obj/O = AM
 		var/tforce = O.throwforce * (TT.speed/THROWFORCE_SPEED_DIVISOR)
-		playsound(src, hitsound, tforce >= 15? 60 : 25, TRUE)
-		if (tforce >= 15)
+		playsound(src, hitsound, tforce >= 15 ? 60 : 25, TRUE)
+		if(tforce > 0)
 			take_damage(tforce)
 
 /turf/simulated/wall/proc/clear_plants()
@@ -149,10 +148,9 @@ var/global/list/wall_fullblend_objects = list(
 		if(!plant.floor) //shrooms drop to the floor
 			plant.floor = 1
 			plant.update_icon()
-			plant.pixel_x = 0
-			plant.pixel_y = 0
+			plant.reset_offsets(0)
 
-/turf/simulated/wall/ChangeTurf(var/turf/N, var/tell_universe = TRUE, var/force_lighting_update = FALSE, var/keep_air = FALSE)
+/turf/simulated/wall/ChangeTurf(var/turf/N, var/tell_universe = TRUE, var/force_lighting_update = FALSE, var/keep_air = FALSE, var/keep_outside = FALSE)
 	clear_plants()
 	. = ..()
 

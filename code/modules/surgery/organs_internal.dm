@@ -19,7 +19,7 @@
 	allowed_tools = list(
 		/obj/item/stack/medical/advanced/bruise_pack = 100,
 		/obj/item/stack/medical/bruise_pack = 40,
-		/obj/item/tape_roll = 20
+		/obj/item/ducttape = 20
 	)
 	min_duration = 70
 	max_duration = 90
@@ -188,7 +188,7 @@
 	var/obj/item/organ/O = LAZYACCESS(global.surgeries_in_progress["\ref[target]"], target_zone)
 	var/obj/item/organ/external/affected = target.get_organ(target_zone)
 	if(istype(O) && istype(affected))
-		affected.implants -= O
+		LAZYREMOVE(affected.implants, O)
 		O.dropInto(target.loc)
 		if(!BP_IS_PROSTHETIC(affected))
 			playsound(target.loc, 'sound/effects/squelch1.ogg', 15, 1)
@@ -275,7 +275,7 @@
 	"<span class='notice'>You have [robotic_surgery ? "reinstalled" : "transplanted"] \the [tool] into [target]'s [affected.name].</span>")
 	var/obj/item/organ/O = tool
 	if(istype(O) && user.unEquip(O, target))
-		affected.implants |= O //move the organ into the patient. The organ is properly reattached in the next step
+		LAZYDISTINCTADD(affected.implants, O) //move the organ into the patient. The organ is properly reattached in the next step
 		if(!(O.status & ORGAN_CUT_AWAY))
 			log_debug("[user] ([user.ckey]) replaced organ [O], which didn't have ORGAN_CUT_AWAY set, in [target] ([target.ckey])")
 			O.status |= ORGAN_CUT_AWAY
@@ -373,7 +373,7 @@
 	var/obj/item/organ/external/affected = target.get_organ(target_zone)
 	if(istype(I) && I.parent_organ == target_zone && affected && (I in affected.implants))
 		I.status &= ~ORGAN_CUT_AWAY //apply sutures
-		affected.implants -= I
+		LAZYREMOVE(affected.implants, I)
 		I.replaced(target, affected)
 
 /decl/surgery_step/internal/attach_organ/fail_step(mob/living/user, mob/living/target, target_zone, obj/item/tool)

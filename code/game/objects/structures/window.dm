@@ -41,7 +41,7 @@
 	name = "[reinf_material ? "reinforced " : ""][material.solid_name] window"
 	desc = "A window pane made from [material.solid_name]."
 
-/obj/structure/window/Initialize(var/ml, var/dir_to_set, var/anchored, var/_mat, var/_reinf_mat)
+/obj/structure/window/Initialize(var/ml, var/_mat, var/_reinf_mat, var/dir_to_set, var/anchored)
 	. = ..(ml, _mat, _reinf_mat)
 	if(!istype(material))
 		. = INITIALIZE_HINT_QDEL
@@ -255,7 +255,7 @@
 			var/response = input(user, "New Window ID:", name, id) as null | text
 			if (isnull(response) || user.incapacitated() || !user.Adjacent(src) || user.get_active_hand() != W)
 				return
-			id = sanitizeSafe(response, MAX_NAME_LEN)
+			id = sanitize_safe(response, MAX_NAME_LEN)
 			to_chat(user, SPAN_NOTICE("The new ID of \the [src] is [id]."))
 		return
 	else if(istype(W, /obj/item/gun/energy/plasmacutter) && anchored)
@@ -282,13 +282,15 @@
 		..()
 	return
 
+// TODO: generalize to matter list and parts_type.
 /obj/structure/window/create_dismantled_products(turf/T)
 	SHOULD_CALL_PARENT(FALSE)
-	var/obj/item/stack/material/S = material.create_object(loc, is_fulltile() ? 4 : 2)
-	if(istype(S) && reinf_material)
-		S.reinf_material = reinf_material
-		S.update_strings()
-		S.update_icon()
+	var/list/products = material.create_object(loc, is_fulltile() ? 4 : 2)
+	if(reinf_material)
+		for(var/obj/item/stack/material/S in products)
+			S.reinf_material = reinf_material
+			S.update_strings()
+			S.update_icon()
 
 /obj/structure/window/grab_attack(var/obj/item/grab/G)
 	if (G.assailant.a_intent != I_HURT)
@@ -338,7 +340,7 @@
 			continue
 		S.update_connections()
 		S.update_icon()
-	
+
 /obj/structure/window/Move()
 	var/ini_dir = dir
 	update_nearby_tiles(need_rebuild=1)
@@ -356,7 +358,7 @@
 	. = ..(user)
 	if(reinf_material)
 		to_chat(user, SPAN_NOTICE("It is reinforced with the [reinf_material.solid_name] lattice."))
-	
+
 	if (reinf_material)
 		switch (construction_state)
 			if (0)
@@ -373,7 +375,7 @@
 
 	if (paint_color)
 		to_chat(user, SPAN_NOTICE("The glass is stained with paint."))
-	
+
 	if (polarized)
 		to_chat(user, SPAN_NOTICE("It appears to be wired."))
 
@@ -419,7 +421,8 @@
 		basestate = reinf_basestate
 	else
 		basestate = initial(basestate)
-	overlays.Cut()
+	
+	..()
 
 	if (paint_color)
 		color = paint_color
@@ -441,20 +444,20 @@
 		for(var/i = 1 to 4)
 			var/conn = connections ? connections[i] : "0"
 			if(other_connections && other_connections[i] != "0")
-				I = image(icon, "[basestate]_other_onframe[conn]", dir = 1<<(i-1))
+				I = image(icon, "[basestate]_other_onframe[conn]", dir = BITFLAG(i-1))
 			else
-				I = image(icon, "[basestate]_onframe[conn]", dir = 1<<(i-1))
+				I = image(icon, "[basestate]_onframe[conn]", dir = BITFLAG(i-1))
 			I.color = paint_color
-			overlays += I
+			add_overlay(I)
 	else
 		for(var/i = 1 to 4)
 			var/conn = connections ? connections[i] : "0"
 			if(other_connections && other_connections[i] != "0")
-				I = image(icon, "[basestate]_other[conn]", dir = 1<<(i-1))
+				I = image(icon, "[basestate]_other[conn]", dir = BITFLAG(i-1))
 			else
-				I = image(icon, "[basestate][conn]", dir = 1<<(i-1))
+				I = image(icon, "[basestate][conn]", dir = BITFLAG(i-1))
 			I.color = paint_color
-			overlays += I
+			add_overlay(I)
 
 /obj/structure/window/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
 	var/melting_point = material.melting_point
@@ -565,13 +568,13 @@
 
 /obj/machinery/button/windowtint/attackby(obj/item/W, mob/user)
 	if(isMultitool(W))
-		var/t = sanitizeSafe(input(user, "Enter the ID for the button.", name, id_tag), MAX_NAME_LEN)
+		var/t = sanitize_safe(input(user, "Enter the ID for the button.", name, id_tag), MAX_NAME_LEN)
 		if(!CanPhysicallyInteract(user))
 			return TRUE
-		t = sanitizeSafe(t, MAX_NAME_LEN)
+		t = sanitize_safe(t, MAX_NAME_LEN)
 		if (t)
 			id_tag = t
-			to_chat(user, SPAN_NOTICE("The new ID of the button is [id_tag]"))
+			to_chat(user, SPAN_NOTICE("The new ID of the button is '[id_tag]'."))
 		return TRUE
 	return ..()
 
@@ -635,7 +638,7 @@
 				return
 
 		if (ST.use(required_amount))
-			var/obj/structure/window/WD = new(loc, dir_to_set, FALSE, ST.material.type, ST.reinf_material && ST.reinf_material.type)
+			var/obj/structure/window/WD = new(loc, ST.material.type, ST.reinf_material?.type, dir_to_set, FALSE)
 			to_chat(user, SPAN_NOTICE("You place [WD]."))
 			WD.construction_state = 0
 			WD.set_anchored(FALSE)

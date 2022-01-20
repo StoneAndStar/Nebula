@@ -64,11 +64,10 @@
 	else
 		icon_state = "[initial(icon_state)]"
 
-/obj/item/clothing/suit/storage/hooded/get_mob_overlay(mob/user_mob, slot, var/bodypart)
-	var/image/ret = ..()
-	if(ret && suittoggled)
-		ret.icon_state += "_t"
-	return ret
+/obj/item/clothing/suit/storage/hooded/adjust_mob_overlay(var/mob/living/user_mob, var/bodytype,  var/image/overlay, var/slot, var/bodypart)
+	if(overlay && suittoggled)
+		overlay.icon_state += "_t"
+	. = ..()
 
 /obj/item/clothing/suit/storage/hooded/wintercoat
 	name = "winter coat"
@@ -84,6 +83,7 @@
 	hoodtype = /obj/item/clothing/head/winterhood
 	allowed = list (/obj/item/pen, /obj/item/paper, /obj/item/flashlight,/obj/item/storage/fancy/cigarettes, /obj/item/storage/box/matches, /obj/item/chems/drinks/flask)
 	siemens_coefficient = 0.6
+	protects_against_weather = TRUE
 
 /obj/item/clothing/head/winterhood
 	name = "winter hood"
@@ -93,6 +93,7 @@
 	cold_protection = SLOT_HEAD
 	flags_inv = HIDEEARS | BLOCKHAIR
 	min_cold_protection_temperature = ARMOR_MIN_COLD_PROTECTION_TEMPERATURE
+	protects_against_weather = TRUE
 
 /obj/item/clothing/suit/storage/hooded/wintercoat/captain
 	name = "captain's winter coat"

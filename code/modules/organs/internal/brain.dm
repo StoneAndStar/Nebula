@@ -7,13 +7,14 @@
 	icon_state = "brain2"
 	force = 1.0
 	w_class = ITEM_SIZE_SMALL
-	throwforce = 1.0
+	throwforce = 1
 	throw_speed = 3
 	throw_range = 5
 	origin_tech = "{'biotech':3}"
 	attack_verb = list("attacked", "slapped", "whacked")
 	relative_size = 85
 	damage_reduction = 0
+	scale_max_damage_to_species_health = FALSE
 
 	var/can_use_mmi = TRUE
 	var/mob/living/carbon/brain/brainmob = null
@@ -210,7 +211,7 @@
 
 /obj/item/organ/internal/brain/proc/brain_damage_callback(var/damage) //Confuse them as a somewhat uncommon aftershock. Side note: Only here so a spawn isn't used. Also, for the sake of a unique timer.
 	if(!QDELETED(owner))
-		to_chat(owner, SPAN_NOTICE("<font size='10'><B>I can't remember which way is forward...</B></font>"))
+		to_chat(owner, SPAN_NOTICE(FONT_HUGE("<B>I can't remember which way is forward...</B>")))
 		ADJ_STATUS(owner, STAT_CONFUSE, damage)
 
 /obj/item/organ/internal/brain/proc/handle_disabilities()

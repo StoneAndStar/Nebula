@@ -36,12 +36,10 @@
 /obj/item/storage/belt/get_mob_overlay(mob/user_mob, slot, bodypart)
 	var/image/ret = ..()
 	if(ret && slot == slot_belt_str && length(contents))
-		var/list/ret_overlays = list()
 		for(var/obj/item/I in contents)
-			var/image/overlay = I.get_mob_overlay(user_mob, slot, bodypart)
-			if(overlay)
-				ret_overlays += overlay
-		ret.overlays += ret_overlays
+			var/image/new_overlay = I.get_mob_overlay(user_mob, slot, bodypart)
+			if(new_overlay)
+				ret.overlays += new_overlay
 	return ret
 
 /obj/item/storage/belt/holster
@@ -245,7 +243,8 @@
 		/obj/item/holowarrant,
 		/obj/item/magnetic_ammo,
 		/obj/item/binoculars,
-		/obj/item/clothing/gloves
+		/obj/item/clothing/gloves,
+		/obj/item/cell/gun
 		)
 
 /obj/item/storage/belt/general
@@ -266,9 +265,9 @@
 		/obj/item/radio/headset,
 		/obj/item/megaphone,
 		/obj/item/taperoll,
+		/obj/item/magnetic_tape,
 		/obj/item/holowarrant,
 		/obj/item/radio,
-		/obj/item/tape,
 		/obj/item/pen,
 		/obj/item/stamp,
 		/obj/item/stack/package_wrap,
@@ -311,6 +310,8 @@
 		/obj/item/flash,
 		/obj/item/telebaton,
 		/obj/item/taperecorder,
+		/obj/item/magnetic_tape,
+		/obj/item/taperoll,
 		/obj/item/folder,
 		/obj/item/paper,
 		/obj/item/clipboard,
@@ -320,10 +321,8 @@
 		/obj/item/modular_computer/pda,
 		/obj/item/radio/headset,
 		/obj/item/megaphone,
-		/obj/item/taperoll,
 		/obj/item/holowarrant,
 		/obj/item/radio,
-		/obj/item/tape,
 		/obj/item/pen,
 		/obj/item/stamp,
 		/obj/item/stack/package_wrap,
@@ -352,16 +351,14 @@
 		/obj/item/forensics/sample/print,
 		/obj/item/forensics/sample/fibers,
 		/obj/item/taperecorder,
-		/obj/item/tape,
+		/obj/item/magnetic_tape,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/gloves/forensic,
 		/obj/item/folder,
 		/obj/item/paper,
 		/obj/item/forensics/sample_kit,
-		/obj/item/camera,
-		/obj/item/taperecorder,
-		/obj/item/tape
-		)
+		/obj/item/camera
+	)
 
 /obj/item/storage/belt/holster/machete
 	name = "machete belt"
@@ -387,9 +384,9 @@
 		/obj/item/radio/beacon,
 		/obj/item/pinpointer/radio,
 		/obj/item/taperecorder,
-		/obj/item/tape,
+		/obj/item/magnetic_tape,
 		/obj/item/scanner/gas
-		)
+	)
 	can_holster = list(/obj/item/hatchet/machete)
 	sound_in = 'sound/effects/holster/sheathin.ogg'
 	sound_out = 'sound/effects/holster/sheathout.ogg'

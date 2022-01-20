@@ -8,7 +8,7 @@
 	mouse_opacity = 0
 	layer = FLY_LAYER
 	alpha = 0
-	color = COLOR_OCEAN
+	color = COLOR_LIQUID_WATER
 
 	var/last_flow_strength = 0
 	var/last_flow_dir = 0
@@ -101,7 +101,7 @@
 	name = "mapped flooded area"
 	alpha = 125
 	icon_state = "shallow_still"
-	color = COLOR_OCEAN
+	color = COLOR_LIQUID_WATER
 
 	var/fluid_type = /decl/material/liquid/water
 	var/fluid_initial = FLUID_MAX_DEPTH
@@ -119,23 +119,32 @@
 	fluid_initial = 10
 
 // Permaflood overlay.
-/obj/effect/flood
-	name = ""
-	mouse_opacity = 0
+var/global/obj/abstract/flood/flood_object = new
+/obj/abstract/flood
 	layer = DEEP_FLUID_LAYER
-	color = COLOR_OCEAN
+	color = COLOR_LIQUID_WATER
 	icon = 'icons/effects/liquids.dmi'
 	icon_state = "ocean"
 	alpha = FLUID_MAX_ALPHA
-	simulated = 0
-	density = 0
-	opacity = 0
-	anchored = 1
 
-/obj/effect/flood/explosion_act()
-	SHOULD_CALL_PARENT(FALSE)
-	return
-
-/obj/effect/flood/Initialize()
+/obj/effect/fluid/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
 	. = ..()
-	verbs.Cut()
+	if(exposed_temperature >= FLAMMABLE_GAS_MINIMUM_BURN_TEMPERATURE)
+		vaporize_fuel(air)
+
+/obj/effect/fluid/proc/vaporize_fuel(datum/gas_mixture/air)
+	if(!length(reagents?.reagent_volumes) || !istype(air))
+		return
+	var/update_air = FALSE
+	for(var/rtype in reagents.reagent_volumes)
+		var/decl/material/mat = GET_DECL(rtype)
+		if(mat.gas_flags & XGM_GAS_FUEL)
+			var/moles = round(reagents.reagent_volumes[rtype] / REAGENT_UNITS_PER_GAS_MOLE)
+			if(moles > 0)
+				air.adjust_gas(rtype, moles, FALSE)
+				reagents.remove_reagent(round(moles * REAGENT_UNITS_PER_GAS_MOLE))
+				update_air = TRUE
+	if(update_air)
+		air.update_values()
+		return TRUE
+	return FALSE
