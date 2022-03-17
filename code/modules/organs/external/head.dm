@@ -52,7 +52,7 @@
 		to_chat(penman, "<span class='notice'>There is no room left to write on [head_name]!</span>")
 		return
 
-	var/graffiti = sanitizeSafe(input(penman, "Enter a message to write on [head_name]:") as text|null, MAX_NAME_LEN)
+	var/graffiti = sanitize_safe(input(penman, "Enter a message to write on [head_name]:") as text|null, MAX_NAME_LEN)
 	if(graffiti)
 		if(!target.Adjacent(penman))
 			to_chat(penman, "<span class='notice'>[head_name] is too far away.</span>")
@@ -107,7 +107,8 @@
 
 			// Floating eyes or other effects.
 			var/image/eye_glow = get_eye_overlay()
-			if(eye_glow) overlays |= eye_glow
+			if(eye_glow) 
+				overlays |= eye_glow
 
 		if(owner.lip_style && !BP_IS_PROSTHETIC(src) && (species && (species.appearance_flags & HAS_LIPS)))
 			var/icon/lip_icon = new/icon(bodytype.get_lip_icon(owner) || 'icons/mob/human_races/species/lips.dmi', "lipstick_s")	

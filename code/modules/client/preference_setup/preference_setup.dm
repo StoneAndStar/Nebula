@@ -1,22 +1,19 @@
-#define TOPIC_UPDATE_PREVIEW 4
-#define TOPIC_REFRESH_UPDATE_PREVIEW (TOPIC_REFRESH|TOPIC_UPDATE_PREVIEW)
-
 var/global/const/CHARACTER_PREFERENCE_INPUT_TITLE = "Character Preference"
+
+/datum/category_group/player_setup_category/background_preferences
+	name = "Background"
+	sort_order = 1 // must go first because species
+	category_item_type = /datum/category_item/player_setup_item/background
 
 /datum/category_group/player_setup_category/physical_preferences
 	name = "Physical"
-	sort_order = 1
+	sort_order = 2
 	category_item_type = /datum/category_item/player_setup_item/physical
 
 /datum/category_group/player_setup_category/aspect_preferences
 	name = "Aspects"
-	sort_order = 2
-	category_item_type = /datum/category_item/player_setup_item/aspects
-
-/datum/category_group/player_setup_category/background_preferences
-	name = "Background"
 	sort_order = 3
-	category_item_type = /datum/category_item/player_setup_item/background
+	category_item_type = /datum/category_item/player_setup_item/aspects
 
 /datum/category_group/player_setup_category/background_preferences/content(var/mob/user)
 	. = ""
@@ -254,6 +251,13 @@ var/global/const/CHARACTER_PREFERENCE_INPUT_TITLE = "Character Preference"
 		pref_mob.client.prefs.update_preview_icon()
 
 	// And again: above operation is slow/may sleep, clients disappear whenever.
+	pref_mob = preference_mob()
+	if(!pref_mob || !pref_mob.client)
+		return 1
+	if(. & TOPIC_HARD_REFRESH)
+		pref_mob.client.prefs.open_setup_window(usr)
+
+	// And again again: above operation is slow/may sleep, clients disappear whenever.
 	pref_mob = preference_mob()
 	if(!pref_mob || !pref_mob.client)
 		return 1
