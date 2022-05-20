@@ -75,7 +75,7 @@
 
 /mob/living/silicon/fully_replace_character_name(new_name)
 	..()
-	create_or_rename_email(new_name, "root.rt")
+	create_or_update_account(new_name)
 	if(istype(idcard))
 		idcard.registered_name = new_name
 
@@ -441,3 +441,7 @@
 	var/datum/extension/interactive/os = get_extension(src, /datum/extension/interactive/os)
 	if(os)
 		os.Process()
+
+/mob/living/silicon/handle_flashed(var/obj/item/flash/flash, var/flash_strength)
+	SET_STATUS_MAX(src, STAT_WEAK, flash_strength)
+	return TRUE

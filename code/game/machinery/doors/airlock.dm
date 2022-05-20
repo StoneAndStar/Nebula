@@ -295,10 +295,12 @@ About the new airlock wires panel:
 		return 0
 
 /obj/machinery/door/airlock/on_update_icon(state=0, override=0)
-	if(connections & (NORTH|SOUTH))
-		set_dir(EAST)
-	else
-		set_dir(SOUTH)
+
+	if(set_dir_on_update)
+		if(connections & (NORTH|SOUTH))
+			set_dir(EAST)
+		else
+			set_dir(SOUTH)
 
 	switch(state)
 		if(0)
@@ -990,7 +992,7 @@ About the new airlock wires panel:
 	. = ..()
 	//wires
 	var/turf/T = get_turf(loc)
-	if(T && (T.z in global.using_map.admin_levels))
+	if(T && isAdminLevel(T.z))
 		secured_wires = TRUE
 	if (secured_wires)
 		wires = new/datum/wires/airlock/secure(src)

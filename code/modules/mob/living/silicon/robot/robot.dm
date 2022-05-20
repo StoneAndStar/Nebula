@@ -300,7 +300,7 @@
 	else
 		changed_name = "[modtype] [braintype]-[num2text(ident)]"
 
-	create_or_rename_email(changed_name, "root.rt")
+	create_or_update_account(changed_name)
 	real_name = changed_name
 	name = real_name
 	if(mind)
@@ -1113,3 +1113,14 @@
 
 /mob/living/silicon/robot/handle_pre_transformation()
 	QDEL_NULL(mmi)
+
+/mob/living/silicon/robot/do_flash_animation()
+	set waitfor = FALSE
+	var/atom/movable/overlay/animation = new(src)
+	animation.plane = plane
+	animation.layer = layer + 0.01
+	animation.icon_state = "blank"
+	animation.icon = 'icons/mob/mob.dmi'
+	flick("blspell", animation)
+	sleep(5)
+	qdel(animation)
